@@ -1,26 +1,295 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Färger från Ypsilons grafiska profil. Guldet är mörkat i text så att det går att läsa på ljus bakgrund. */
+@theme {
+  --color-navy: #030972;
+  --color-navy-deep: #020652;
+  --color-royal: #003d8f;
+  --color-gold: #edc967;
+  --color-gold-deep: #d4a238;
+  --color-gold-ink: #85631a;
+  --color-ink: #13153b;
+  --color-muted: #555874;
+  --color-paper: #fcfaf5;
+  --color-cream: #f5eedd;
+  --color-line: #e6dfcd;
+
+  /* Varm palett för den publika sajten. Blått och guld används sparsamt som detaljer. */
+  --color-ivory: #f8f4ee;
+  --color-linen: #efe7dc;
+  --color-stone: #ded3c2;
+  --color-espresso: #1f1916;
+  --color-espresso-soft: #302621;
+  --color-warm: #261f1c;
+  --color-warm-muted: #5e544b;
+  --color-antique: #826325;
+  --color-antique-light: #c5a059;
+  --color-champagne: #f0e1bf;
+
+  /* Dark Academia & Nordic Heritage palett */
+  --color-midnight: #0d0f14;
+  --color-midnight-surface: #141722;
+  --color-midnight-border: rgba(197, 160, 89, 0.22);
+  --color-parchment: #f8f4ec;
+  --color-parchment-warm: #eee6d6;
+  --color-foil: #c5a059;
+  --color-foil-bright: #dfbe76;
+  --color-leather: #14110f;
+
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-source-sans), "Source Sans 3", system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@layer base {
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
 }
+
+/* Publika sajten: mörk duk bakom sidan, så att överskroll i topp och botten smälter ihop med header och sidfot */
+html:has([data-site]),
+body:has([data-site]) {
+  background: var(--color-midnight);
+}
+
+::selection {
+  background: var(--color-champagne);
+  color: var(--color-espresso);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-royal);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-variant-numeric: lining-nums;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.12;
+}
+
+}
+
+@layer components {
+/* Bandet i guld och blått från den grafiska profilen. */
+.ribbon {
+  height: 22px;
+  background: linear-gradient(
+    to bottom,
+    var(--color-gold) 0 5px,
+    var(--color-navy) 5px 17px,
+    var(--color-gold) 17px 22px
+  );
+}
+.ribbon-thin {
+  height: 10px;
+  background: linear-gradient(
+    to bottom,
+    var(--color-gold) 0 2px,
+    var(--color-navy) 2px 8px,
+    var(--color-gold) 8px 10px
+  );
+}
+
+/* Tunn linje i profilens guld och blått, överst på sidan. */
+.brand-line {
+  height: 5px;
+  background: linear-gradient(to bottom, var(--color-gold) 0 2px, var(--color-navy) 2px 5px);
+}
+
+/* Liten guldprydnad under rubriker. */
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-antique-light);
+}
+.ornament::before,
+.ornament::after {
+  content: "";
+  height: 1px;
+  width: 2.5rem;
+  background: currentColor;
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-antique);
+}
+
+/* Oxford Frame: Klassisk akademisk dubbellinje för ramar och kort */
+.oxford-frame {
+  position: relative;
+}
+.oxford-frame::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(197, 160, 89, 0.25);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Heraldisk avdelare */
+.heraldic-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: var(--color-antique-light);
+}
+.heraldic-divider::before,
+.heraldic-divider::after {
+  content: "";
+  height: 1px;
+  width: 3rem;
+  background: currentColor;
+  opacity: 0.35;
+}
+
+/* Text från redigeraren (Markdown). */
+.prose-y {
+  max-width: 68ch;
+  color: inherit;
+}
+.prose-y > * + * { margin-top: 1.1em; }
+.prose-y h2 {
+  font-size: 1.9rem;
+  margin-top: 2em;
+  color: var(--color-warm);
+}
+.prose-y h3 {
+  font-size: 1.45rem;
+  margin-top: 1.6em;
+  color: var(--color-warm);
+}
+.prose-y h2 + *, .prose-y h3 + * { margin-top: 0.6em; }
+.prose-y a {
+  color: var(--color-warm);
+  text-decoration: underline;
+  text-decoration-color: var(--color-antique-light);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+.prose-y a:hover { color: var(--color-antique); text-decoration-color: var(--color-antique); }
+.prose-y ul { list-style: disc; padding-left: 1.4em; }
+.prose-y ol { list-style: decimal; padding-left: 1.4em; }
+.prose-y li + li { margin-top: 0.35em; }
+.prose-y li::marker { color: var(--color-antique-light); }
+.prose-y blockquote {
+  border-left: 3px solid var(--color-antique-light);
+  padding: 0.2em 0 0.2em 1.1em;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-style: italic;
+  color: var(--color-warm);
+}
+.prose-y img {
+  border-radius: 4px;
+  margin-inline: auto;
+  max-height: 70vh;
+  width: auto;
+}
+.prose-y p:has(> img + img) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.prose-y p:has(> img + img) img {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+.prose-y hr {
+  border: 0;
+  height: 1px;
+  background: var(--color-line);
+  margin: 2.2em 0;
+}
+.prose-y strong { font-weight: 650; color: inherit; }
+.prose-y table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.prose-y th, .prose-y td { border-bottom: 1px solid var(--color-line); padding: 0.5em 0.6em; text-align: left; }
+.prose-y > p:first-child.lead { font-size: 1.2rem; }
+
+/* Sångtexter behåller sina radbrytningar. */
+.lyrics {
+  white-space: pre-line;
+  font-size: 1.12rem;
+  line-height: 1.75;
+}
+
+
+/* Ljus text på mörk bakgrund, t.ex. den blå rutan på startsidan. */
+.prose-invert { color: rgb(255 255 255 / 0.86); }
+.prose-invert strong { color: white; }
+.prose-invert h2, .prose-invert h3 { color: white; }
+.prose-invert a { color: var(--color-champagne); text-decoration-color: currentColor; }
+.prose-invert a:hover { color: white; }
+
+.font-display { font-weight: 600; letter-spacing: -0.005em; font-variant-numeric: lining-nums; }
+
+/* Admin */
+.admin-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  background: var(--color-navy);
+  padding: 0.65rem 1.25rem;
+  font-weight: 600;
+  color: white;
+  transition: background-color 0.15s;
+}
+.admin-btn-primary:hover { background: var(--color-navy-deep); }
+.admin-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.admin-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-line);
+  background: white;
+  padding: 0.6rem 1.05rem;
+  font-weight: 600;
+  color: var(--color-navy);
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.admin-btn-secondary:hover { border-color: color-mix(in srgb, var(--color-navy) 40%, transparent); }
+.admin-btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
+.admin-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 0.5rem;
+  border: 1px solid #f1c4c4;
+  background: white;
+  padding: 0.6rem 1.05rem;
+  font-weight: 600;
+  color: #a61b1b;
+}
+.admin-btn-danger:hover { background: #fdf1f1; border-color: #e39a9a; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+

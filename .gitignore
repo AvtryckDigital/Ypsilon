@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Cloudflare / OpenNext
+.dev.vars
+.open-next/
+.wrangler/
+
+# WordPress-migrering (nedladdade filer)
+migration-output/
+!.env.example

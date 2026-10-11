@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ypsilon-web",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      // Databasen med allt innehåll och alla admin-konton.
+      // Skapa den med: npx wrangler d1 create ypsilon-db
+      // och klistra in database_id som kommandot skriver ut.
+      "binding": "DB",
+      "database_name": "ypsilon-db",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      // Bilder som laddas upp via admin och bilder från den gamla sajten.
+      // Skapa den med: npx wrangler r2 bucket create ypsilon-media
+      "binding": "MEDIA",
+      "bucket_name": "ypsilon-media"
+    }
+  ],
+  "observability": { "enabled": true }
+}
