@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Images } from "lucide-react";
 import { Container, EmptyState, PageHeader, SectionTitle } from "@/components/ui";
-import { getAlbums, getPage, getRecentAlbumPhotos } from "@/lib/data";
+import { getAlbums, getPage } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 import { srcSet } from "@/lib/images";
 import type { Album } from "@/lib/types";

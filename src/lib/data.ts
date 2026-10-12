@@ -7,8 +7,12 @@ import type {
 } from "./types";
 
 export async function getSettings(): Promise<Settings> {
-  const rows = await all<{ key: string; value: string | null }>("SELECT key, value FROM settings");
-  return Object.fromEntries(rows.map((r) => [r.key, r.value ?? ""]));
+  try {
+    const rows = await all<{ key: string; value: string | null }>("SELECT key, value FROM settings");
+    return Object.fromEntries(rows.map((r) => [r.key, r.value ?? ""]));
+  } catch {
+    return {} as Settings;
+  }
 }
 
 export async function getPage(slug: string) {

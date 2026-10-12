@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ButtonLink, Container, Ornament } from "@/components/ui";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Sidan finns inte" };
 
 export default function NotFound() {
