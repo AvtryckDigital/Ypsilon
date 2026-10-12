@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "db:migrate:local": "wrangler d1 migrations apply ypsilon-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply ypsilon-db --remote",
     "db:seed:local": "wrangler d1 execute ypsilon-db --local --file=seed/innehall.sql",
