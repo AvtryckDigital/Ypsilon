@@ -15,7 +15,7 @@
       // och klistra in database_id som kommandot skriver ut.
       "binding": "DB",
       "database_name": "ypsilon-db",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "025ae666-e296-4edf-8008-40a98d4463af",
       "migrations_dir": "migrations"
     }
   ],

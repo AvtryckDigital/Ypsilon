@@ -169,5 +169,11 @@ export async function deleteLibraryImage(img: LibraryImage) {
   if (used.length) return used;
   await run("DELETE FROM media WHERE id = ?", img.id);
   await deleteMedia(img.src, img.medium, img.thumb).catch(() => {});
+  if (img.size) {
+    await run(
+      "UPDATE settings SET value = CAST(MAX(0, CAST(COALESCE(value, '0') AS INTEGER) - ?) AS TEXT) WHERE key = 'r2_storage_bytes'",
+      img.size
+    );
+  }
   return [];
 }
