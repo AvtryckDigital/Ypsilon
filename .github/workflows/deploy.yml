@@ -13,6 +13,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: production
     name: Bygg och publicera
     steps:
       - name: Hämta koden
