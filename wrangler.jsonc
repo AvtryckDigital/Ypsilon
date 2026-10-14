@@ -16,7 +16,9 @@
       "binding": "DB",
       "database_name": "ypsilon-db",
       "database_id": "025ae666-e296-4edf-8008-40a98d4463af",
-      "migrations_dir": "migrations"
+      "migrations_dir": "migrations",
+      // Även `next dev` använder den riktiga databasen, inte en lokal kopia.
+      "remote": true
     }
   ],
   "r2_buckets": [
@@ -24,7 +26,9 @@
       // Bilder som laddas upp via admin och bilder från den gamla sajten.
       // Skapa den med: npx wrangler r2 bucket create ypsilon-media
       "binding": "MEDIA",
-      "bucket_name": "ypsilon-media"
+      "bucket_name": "ypsilon-media",
+      // Även `next dev` använder den riktiga bucketen, inte en lokal kopia.
+      "remote": true
     }
   ],
   "observability": {
