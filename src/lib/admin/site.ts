@@ -1,72 +1,238 @@
 import type { Field } from "./fields";
 
+export type PageDef = {
+  slug: string;
+  label: string;
+  path: string;
+  usesBody: boolean;
+  usesImage?: boolean;
+  note?: string;
+  customFields?: Field[];
+};
+
+export const HOME_PAGE_FIELDS: Field[] = [
+  { name: "title", label: "Sidrubrik", type: "text", required: true, full: true, help: "Sajtens titel som visas i webbläsarfliken och för sökmotorer." },
+  {
+    name: "home_tagline",
+    label: "Slogan på startsidan",
+    type: "text",
+    full: true,
+    help: "Visas i citattecken under rubriken på startsidan, t.ex. »Till glädje och prydnad för Norrlands nation sedan 1962«. Slogan i sidfoten ändras separat under Inställningar.",
+  },
+  { name: "intro", label: "Ingress", type: "textarea", rows: 2, full: true, help: "Kort text som sammanfattar föreningen på startsidan." },
+  {
+    name: "hero_image",
+    label: "Stor bild överst",
+    type: "image",
+    group: "Startsidans bilder",
+    groupDescription: "Huvudbilden överst och bilden bredvid presentationstexten. Lämna tomt för att automatiskt visa bilder från de senaste albumen i galleriet.",
+    help: "Hela bilden visas. Lämna tomt för att automatiskt visa en bild från det senaste gallerialbumet.",
+  },
+  {
+    name: "hero_caption",
+    label: "Bildtext till stora bilden",
+    type: "text",
+    placeholder: "t.ex. SnöYran 2026",
+    help: "Visas i hörnet på bilden. Lämna tomt för att automatiskt visa albumets namn om bilden hämtas från galleriet.",
+  },
+  {
+    name: "about_image",
+    label: "Bild bredvid ”Om oss”",
+    type: "image",
+    help: "Bild bredvid presentationstexten. Lämna tomt för att automatiskt visa en bild från galleriet.",
+  },
+  {
+    name: "body",
+    label: "Text under ”Om oss”",
+    type: "markdown",
+    full: true,
+    group: "Presentationstext",
+    groupDescription: "Texten som beskriver föreningen under rubriken ”Om oss” på startsidan.",
+  },
+];
+
+export const BOARD_PAGE_FIELDS: Field[] = [
+  { name: "title", label: "Rubrik", type: "text", required: true, full: true },
+  { name: "intro", label: "Ingress", type: "textarea", rows: 3, full: true, help: "Kort text under sidhuvudets rubrik." },
+  { name: "image", label: "Bild i sidhuvudet", type: "image", help: "Visas stort bakom rubriken. Utan bild visas en mörk bakgrund." },
+  { name: "body", label: "Inledande text", type: "markdown", full: true, help: "Text som visas ovanför gruppbilden och styrelsemedlemmarna." },
+  {
+    name: "board_heading",
+    label: "Rubrik ovanför styrelsen",
+    type: "text",
+    full: true,
+    placeholder: "t.ex. Ypsilons styrelse höstterminen 2026",
+    group: "Styrelsens sektion och gruppbild",
+    groupDescription: "Gruppbild och rubrik ovanför medlemmarna. Enskilda styrelsemedlemmar läggs till och ändras under ”Styrelsen” i huvudmenyn.",
+    help: "Visas som rubrik ovanför korten med styrelsemedlemmar.",
+  },
+  {
+    name: "board_photo",
+    label: "Gruppbild på styrelsen",
+    type: "image",
+    help: "Stor bild som visas inramad mellan texten och styrelsemedlemmarna.",
+  },
+  {
+    name: "board_photo_caption",
+    label: "Bildtext till gruppbilden",
+    type: "text",
+    help: "Visas centrerat under gruppbilden.",
+  },
+];
+
+export const FORMER_MEMBER_PAGE_FIELDS: Field[] = [
+  { name: "title", label: "Rubrik", type: "text", required: true, full: true },
+  { name: "intro", label: "Ingress", type: "textarea", rows: 3, full: true, help: "Kort text som visas under rubriken." },
+  { name: "image", label: "Bild i sidhuvudet", type: "image", help: "Visas stort bakom rubriken." },
+  { name: "body", label: "Text", type: "markdown", full: true },
+  {
+    name: "matrikel_url",
+    label: "Matrikelbladet (PDF)",
+    type: "file",
+    full: true,
+    group: "Matrikelblad",
+    groupDescription: "Dokument som gamla medlemmar laddar ner från sidorutan.",
+    help: "Ladda upp en PDF som gamla medlemmar kan ladda ner och fylla i.",
+  },
+];
+
 // Redigerbara sidor. Sidorna har fasta adresser och kan bara ändras, inte skapas eller tas bort.
-// usesImage: false döljer fältet för bild i sidhuvudet, för sidor som inte visar det.
-export const PAGES: { slug: string; label: string; path: string; usesBody: boolean; usesImage?: boolean; note?: string }[] = [
-  { slug: "hem", label: "Startsidan", path: "/", usesBody: true, usesImage: false, note: "Ingressen visas i den stora bilden överst och texten under ”Om oss”. Bilderna på startsidan väljs under Inställningar." },
-  { slug: "om-ypsilon", label: "Vad är Ypsilon?", path: "/om-ypsilon", usesBody: true },
-  { slug: "historia", label: "Historia", path: "/historia", usesBody: true },
-  { slug: "gammal-medlem", label: "Gammal medlem?", path: "/gammal-medlem", usesBody: true },
-  { slug: "kontakt", label: "Kontakt", path: "/kontakt", usesBody: true, note: "Texten visas ovanför formuläret." },
-  { slug: "kalendarium", label: "Kalendarium", path: "/kalendarium", usesBody: true, note: "Texten visas ovanför evenemangen." },
-  { slug: "nyheter", label: "Nyheter", path: "/nyheter", usesBody: false },
-  { slug: "sangbok", label: "Sångbok", path: "/sangbok", usesBody: false },
-  { slug: "galleri", label: "Galleri", path: "/galleri", usesBody: false },
-  { slug: "styrelsen", label: "Styrelsen", path: "/styrelsen", usesBody: true },
-  { slug: "overypsor", label: "ÖverYpsor", path: "/overypsor", usesBody: true },
-  { slug: "hedersypsor", label: "HedersYpsor", path: "/hedersypsor", usesBody: true },
+export const PAGES: PageDef[] = [
+  {
+    slug: "hem",
+    label: "Startsidan",
+    path: "/",
+    usesBody: true,
+    usesImage: false,
+    note: "Här ändrar du allt på startsidan: rubrik, slogan, stor bild överst med bildtext, bild bredvid ”Om oss” samt presentationstexten.",
+    customFields: HOME_PAGE_FIELDS,
+  },
+  { slug: "om-ypsilon", label: "Vad är Ypsilon?", path: "/om-ypsilon", usesBody: true, note: "Text och bild i sidhuvudet för sidan ”Vad är Ypsilon?”." },
+  { slug: "historia", label: "Historia", path: "/historia", usesBody: true, note: "Föreningens historik och bild i sidhuvudet." },
+  {
+    slug: "gammal-medlem",
+    label: "Gammal medlem?",
+    path: "/gammal-medlem",
+    usesBody: true,
+    note: "Texten för gamla medlemmar och uppladdning av matrikelbladet (PDF).",
+    customFields: FORMER_MEMBER_PAGE_FIELDS,
+  },
+  { slug: "kontakt", label: "Kontakt", path: "/kontakt", usesBody: true, note: "Texten som visas ovanför kontaktformuläret. E-postadresser och styrelsekontakter ändras under ”Kontakter” i menyn." },
+  { slug: "kalendarium", label: "Kalendarium", path: "/kalendarium", usesBody: true, note: "Texten ovanför kalendariet. Enskilda evenemang ändras under ”Kalendarium” i menyn." },
+  { slug: "nyheter", label: "Nyheter", path: "/nyheter", usesBody: false, note: "Rubrik och ingress för nyhetsarkivet. Inlägg skapas och ändras under ”Nyheter” i menyn." },
+  { slug: "sangbok", label: "Sångbok", path: "/sangbok", usesBody: false, note: "Rubrik och ingress för sångboken. Enskilda sånger ändras under ”Sångbok” i menyn." },
+  { slug: "galleri", label: "Galleri", path: "/galleri", usesBody: false, note: "Rubrik och ingress för bildgalleriet. Album och bilder ändras under ”Galleri” i menyn." },
+  {
+    slug: "styrelsen",
+    label: "Styrelsen",
+    path: "/styrelsen",
+    usesBody: true,
+    note: "Rubrik, ingress, inledande text, gruppbild samt sektionsrubrik. Enskilda styrelsemedlemmar läggs till och ändras under ”Styrelsen” i menyn.",
+    customFields: BOARD_PAGE_FIELDS,
+  },
+  { slug: "overypsor", label: "ÖverYpsor", path: "/overypsor", usesBody: true, note: "Text och bild i sidhuvudet. Förteckningen över ÖverYpsor ändras under ”ÖverYpsor” i menyn." },
+  { slug: "hedersypsor", label: "HedersYpsor", path: "/hedersypsor", usesBody: true, note: "Text och bild i sidhuvudet. Förteckningen över hedersmedlemmar ändras under ”HedersYpsor” i menyn." },
 ];
 
 export const PAGE_FIELDS: Field[] = [
   { name: "title", label: "Rubrik", type: "text", required: true, full: true },
   { name: "intro", label: "Ingress", type: "textarea", rows: 3, full: true, help: "Kort text som visas under rubriken." },
-  { name: "image", label: "Bild i sidhuvudet", type: "image", help: "Visas stort bakom rubriken. Utan bild blir sidhuvudet blått." },
+  { name: "image", label: "Bild i sidhuvudet", type: "image", help: "Visas stort bakom rubriken. Utan bild blir sidhuvudet mörkt." },
   { name: "body", label: "Text", type: "markdown", full: true },
 ];
 
+export function getPageFields(def: PageDef): Field[] {
+  if (def.customFields) return def.customFields;
+  return (def.usesBody ? PAGE_FIELDS : PAGE_FIELDS.filter((f) => f.name === "title" || f.name === "intro")).filter(
+    (f) => f.name !== "image" || def.usesImage !== false,
+  );
+}
+
 export const SETTINGS_GROUPS: { title: string; description?: string; fields: Field[] }[] = [
   {
-    title: "Startsidans bilder",
-    description: "Lämna tomt för att automatiskt använda bilder från de senaste albumen i galleriet.",
+    title: "Sidfot (Footer)",
+    description: "Visas längst ner på alla sidor på hela hemsidan.",
     fields: [
-      { name: "hero_image", label: "Stor bild överst", type: "image", help: "Hela bilden visas. På dator täcks vänster del av rubriken, och en suddig kopia fyller ytan om bilden inte är bred nog. På mobil visas rubriken under bilden." },
-      { name: "hero_caption", label: "Bildtext", type: "text", placeholder: "t.ex. SnöYran 2026", help: "Visas litet i hörnet. Tomt = albumets namn om bilden kommer från galleriet. Töms när du byter bild, om du inte skriver en ny." },
-      { name: "about_image", label: "Bild bredvid ”Om oss”", type: "image" },
+      {
+        name: "tagline",
+        label: "Slogan i sidfoten",
+        type: "text",
+        full: true,
+        help: "Visas i sidfoten (footer) på alla sidor. Slogan på startsidan ändras separat under Sidor & texter → Startsidan.",
+      },
+      {
+        name: "short_description",
+        label: "Kort beskrivning av föreningen",
+        type: "textarea",
+        rows: 3,
+        full: true,
+        help: "Visas i sidfoten (footer) under föreningens namn och vapen.",
+      },
     ],
   },
   {
-    title: "Allmänt",
+    title: "Kontaktuppgifter",
+    description: "Visas i sidfoten (footer) och på kontaktsidan (/kontakt).",
     fields: [
-      { name: "tagline", label: "Slogan", type: "text", full: true, help: "Visas på startsidan och i sidfoten." },
-      { name: "short_description", label: "Kort beskrivning av föreningen", type: "textarea", rows: 3, full: true, help: "Visas i sidfoten." },
-      { name: "announcement", label: "Meddelande på startsidan", type: "text", full: true, help: "Visas som en guldfärgad rad på startsidan, t.ex. ”Anmälan till Älggasquen är öppen!”. Lämna tomt för att dölja." },
+      {
+        name: "main_email",
+        label: "Föreningens e-postadress",
+        type: "email",
+        help: "Visas i sidfoten (footer) och används som reservadress i kontaktformuläret på kontaktsidan (/kontakt).",
+      },
+      {
+        name: "address",
+        label: "Postadress",
+        type: "textarea",
+        rows: 4,
+        help: "Visas i sidfoten (footer), på kontaktsidan (/kontakt) och på sidan för gamla medlemmar (/gammal-medlem).",
+      },
     ],
   },
   {
-    title: "Kontakt och betalning",
-    description: "Visas i sidfoten och på kontaktsidan.",
+    title: "Betalning (Bankgiro & Swish)",
+    description: "Visas i sidfoten (footer) på alla sidor.",
     fields: [
-      { name: "main_email", label: "Föreningens huvudadress", type: "email" },
-      { name: "address", label: "Postadress", type: "textarea", rows: 4 },
-      { name: "bankgiro", label: "Bankgiro", type: "text" },
-      { name: "swish", label: "Swish-nummer", type: "text" },
-      { name: "payment_text", label: "Text om betalning", type: "textarea", rows: 3, full: true },
-      { name: "instagram", label: "Instagram", type: "url", placeholder: "https://www.instagram.com/…" },
-      { name: "facebook", label: "Facebook", type: "url", placeholder: "https://www.facebook.com/…" },
+      {
+        name: "bankgiro",
+        label: "Bankgiro",
+        type: "text",
+        help: "Visas i sidfoten (footer).",
+      },
+      {
+        name: "swish",
+        label: "Swish-nummer",
+        type: "text",
+        help: "Visas i sidfoten (footer).",
+      },
+      {
+        name: "payment_text",
+        label: "Information om betalning",
+        type: "textarea",
+        rows: 3,
+        full: true,
+        help: "Visas i sidfoten (footer) under Bankgiro och Swish.",
+      },
     ],
   },
   {
-    title: "Styrelsen",
+    title: "Sociala medier",
+    description: "Länkar som visas i sidfoten (footer) och på kontaktsidan (/kontakt).",
     fields: [
-      { name: "board_heading", label: "Rubrik ovanför styrelsen", type: "text", full: true, placeholder: "t.ex. Ypsilons styrelse höstterminen 2026" },
-      { name: "board_photo", label: "Gruppbild på styrelsen", type: "image" },
-      { name: "board_photo_caption", label: "Bildtext till gruppbilden", type: "text" },
-    ],
-  },
-  {
-    title: "Gammal medlem",
-    fields: [
-      { name: "matrikel_url", label: "Matrikelbladet", type: "file", full: true, help: "PDF som gamla medlemmar fyller i. Ladda upp en ny fil för att byta." },
+      {
+        name: "instagram",
+        label: "Instagram",
+        type: "url",
+        placeholder: "https://www.instagram.com/…",
+        help: "Visas i sidfoten (footer) och på kontaktsidan (/kontakt).",
+      },
+      {
+        name: "facebook",
+        label: "Facebook",
+        type: "url",
+        placeholder: "https://www.facebook.com/…",
+        help: "Visas i sidfoten (footer) och på kontaktsidan (/kontakt).",
+      },
     ],
   },
 ];

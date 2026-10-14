@@ -10,14 +10,15 @@ const field =
 
 // Skickar meddelandet via Web3Forms, som vidarebefordrar det till föreningens e-post.
 export default function ContactForm({ accessKey, fallbackEmail }: { accessKey?: string; fallbackEmail?: string }) {
+  const key = accessKey || process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!accessKey) return;
+    if (!key) return;
     setStatus("sending");
     const data = new FormData(e.currentTarget);
-    data.append("access_key", accessKey);
+    data.append("access_key", key);
     data.append("subject", `Ypsilon: ${data.get("amne") || "Nytt meddelande"} från ${data.get("namn")}`);
     data.append("from_name", "Ypsilons hemsida");
     try {
@@ -44,7 +45,7 @@ export default function ContactForm({ accessKey, fallbackEmail }: { accessKey?: 
 
   return (
     <form onSubmit={onSubmit} className="space-y-5">
-      {!accessKey && (
+      {!key && (
         <p className="rounded-sm border border-[#c5a059]/40 bg-[#fbf9f5] px-4 py-3 text-[0.95rem]">
           Formuläret är inte aktiverat ännu.
           {fallbackEmail && (
@@ -85,7 +86,7 @@ export default function ContactForm({ accessKey, fallbackEmail }: { accessKey?: 
 
       <button
         type="submit"
-        disabled={!accessKey || status === "sending"}
+        disabled={!key || status === "sending"}
         className="inline-flex items-center gap-2 rounded-full border border-[#c5a059]/40 bg-[#0d0f14] px-8 py-3.5 font-serif text-xs font-semibold uppercase tracking-[0.2em] text-[#dfbe76] shadow-sm transition hover:border-[#c5a059] hover:bg-[#131620] disabled:cursor-not-allowed disabled:opacity-50"
       >
         {status === "sending" && <Loader2 size={16} className="animate-spin text-[#dfbe76]" aria-hidden />}

@@ -119,9 +119,9 @@ export default async function HomePage() {
               Ypsilon
             </h1>
 
-            {settings.tagline && (
+            {(settings.home_tagline || settings.tagline) && (
               <p className="mt-6 max-w-xl font-display text-2xl italic leading-snug text-[#ede2cd] [text-shadow:0_2px_14px_rgba(0,0,0,0.7)] sm:text-[1.85rem]">
-                »{settings.tagline}«
+                »{settings.home_tagline || settings.tagline}«
               </p>
             )}
           </div>
@@ -133,14 +133,6 @@ export default async function HomePage() {
           </p>
         )}
       </section>
-
-      {settings.announcement && (
-        <div className="border-b border-[#c5a059]/30 bg-[#131620] py-3 text-[#dfbe76]">
-          <Container className="flex items-center justify-center gap-3 text-center font-serif text-sm font-semibold tracking-wider uppercase">
-            <span>{settings.announcement}</span>
-          </Container>
-        </div>
-      )}
 
       {/* Om oss -------------------------------------------------------------------- */}
       <section className="py-20 sm:py-28">

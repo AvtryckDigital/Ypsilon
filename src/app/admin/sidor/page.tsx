@@ -16,7 +16,7 @@ export default async function PagesAdmin() {
     <>
       <AdminHeader
         title="Sidor och texter"
-        description="Rubriker, ingresser och texter på hemsidans sidor. Listor som nyheter och styrelsen ändras under sina egna menyval."
+        description="Rubriker, bilder och texter på hemsidans sidor. Klicka på en sida för att ändra dess innehåll."
       />
       <ul className="divide-y divide-line rounded-lg border border-line bg-white">
         {PAGES.map((p) => (

@@ -7,7 +7,7 @@ import { all, batch, first, run } from "@/lib/db";
 import { getEntity, slugify, type Entity } from "@/lib/admin/entities";
 import type { Field } from "@/lib/admin/fields";
 import { errorState, parseFields, type FormState } from "@/lib/admin/parse";
-import { PAGE_FIELDS, PAGES, SETTINGS_GROUPS } from "@/lib/admin/site";
+import { getPageFields, PAGES, SETTINGS_GROUPS } from "@/lib/admin/site";
 import { deleteIfUnused, deleteLibraryImage, scanStorage, type LibraryImage } from "@/lib/media-library";
 import { hashPassword, MIN_PASSWORD_LENGTH, verifyPassword } from "@/lib/password";
 
@@ -216,20 +216,57 @@ export async function savePage(slug: string, _prev: FormState, form: FormData): 
   await requireUser();
   const page = PAGES.find((p) => p.slug === slug);
   if (!page) return { error: "Okänd sida." };
-  const { values, errors } = parseFields(PAGE_FIELDS, form);
+  const fields = getPageFields(page);
+  const { values, errors } = parseFields(fields, form);
   if (Object.keys(errors).length) return errorState(errors);
+
+  const PAGE_COLUMNS = new Set(["title", "intro", "body", "image"]);
+  const settingFields = fields.filter((f) => !PAGE_COLUMNS.has(f.name));
+
+  if (settingFields.length > 0) {
+    const oldSettings = Object.fromEntries(
+      (await all<{ key: string; value: string | null }>("SELECT key, value FROM settings")).map((r) => [r.key, r.value]),
+    );
+
+    // En bildtext hör till en viss bild. Byts bilden utan att texten ändras töms den, och albumets namn visas i stället.
+    if (
+      values.hero_image !== undefined &&
+      (oldSettings.hero_image ?? "") !== (values.hero_image ?? "") &&
+      (oldSettings.hero_caption ?? "") === (values.hero_caption ?? "")
+    ) {
+      values.hero_caption = null;
+    }
+
+    await batch(
+      settingFields.map((f) => ({
+        sql: "INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+        params: [f.name, values[f.name] === null || values[f.name] === undefined ? "" : String(values[f.name])],
+      })),
+    );
+
+    const replacedSettingsMedia = mediaFields(settingFields)
+      .filter((f) => oldSettings[f] && oldSettings[f] !== values[f])
+      .map((f) => oldSettings[f] as string);
+    if (replacedSettingsMedia.length) await deleteUnusedMedia(replacedSettingsMedia);
+  }
 
   const old = await first<{ image: string | null }>("SELECT image FROM pages WHERE slug = ?", slug);
   await run(
     `INSERT INTO pages (slug, title, intro, body, image, updated_at) VALUES (?, ?, ?, ?, ?, datetime('now'))
      ON CONFLICT(slug) DO UPDATE SET title = excluded.title, intro = excluded.intro, body = excluded.body,
        image = excluded.image, updated_at = excluded.updated_at`,
-    slug, values.title, values.intro, values.body, values.image,
+    slug,
+    values.title ?? page.label,
+    values.intro ?? null,
+    values.body ?? null,
+    values.image ?? null,
   );
   if (old?.image && old.image !== values.image) await deleteUnusedMedia([old.image]);
 
   revalidatePath(page.path);
+  revalidatePath("/");
   revalidatePath("/admin/sidor");
+  revalidatePath(`/admin/sidor/${slug}`);
   redirect("/admin/sidor?sparat=1");
 }
 
@@ -242,14 +279,11 @@ export async function saveSettings(_prev: FormState, form: FormData): Promise<Fo
   const old = Object.fromEntries(
     (await all<{ key: string; value: string | null }>("SELECT key, value FROM settings")).map((r) => [r.key, r.value]),
   );
-  // En bildtext hör till en viss bild. Byts bilden utan att texten ändras töms den, och albumets namn visas i stället.
-  if ((old.hero_image ?? "") !== (values.hero_image ?? "") && (old.hero_caption ?? "") === (values.hero_caption ?? "")) {
-    values.hero_caption = null;
-  }
+
   await batch(
     fields.map((f) => ({
       sql: "INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
-      params: [f.name, values[f.name] === null ? "" : String(values[f.name])],
+      params: [f.name, values[f.name] === null || values[f.name] === undefined ? "" : String(values[f.name])],
     })),
   );
   const replaced = mediaFields(fields).filter((f) => old[f] && old[f] !== values[f]).map((f) => old[f] as string);

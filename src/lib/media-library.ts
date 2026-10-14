@@ -1,6 +1,6 @@
 import "server-only";
 import { ENTITIES } from "./admin/entities";
-import { PAGES, SETTINGS_GROUPS } from "./admin/site";
+import { getPageFields, PAGES, SETTINGS_GROUPS } from "./admin/site";
 import { all, batch, run } from "./db";
 import { getEnv } from "./cf";
 import { deleteMedia, mediaUrl } from "./media";
@@ -32,9 +32,12 @@ export async function collectUsage() {
     refs.set(url, list);
   };
 
-  const settingLabels = new Map(SETTINGS_GROUPS.flatMap((g) => g.fields).map((f) => [f.name, f.label]));
+  const allLabels = new Map([
+    ...SETTINGS_GROUPS.flatMap((g) => g.fields).map((f) => [f.name, f.label] as const),
+    ...PAGES.flatMap((p) => getPageFields(p)).map((f) => [f.name, f.label] as const),
+  ]);
   for (const s of await all<{ key: string; value: string | null }>("SELECT key, value FROM settings")) {
-    if (s.value?.startsWith("/media/")) add(s.value, `Inställningar: ${settingLabels.get(s.key) ?? s.key}`);
+    if (s.value?.startsWith("/media/")) add(s.value, `Inställningar/Sidor: ${allLabels.get(s.key) ?? s.key}`);
   }
 
   for (const p of await all<{ slug: string; image: string | null; body: string | null }>("SELECT slug, image, body FROM pages")) {

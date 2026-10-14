@@ -10,7 +10,10 @@ export default async function SettingsPage() {
   const settings = await getSettings();
   return (
     <>
-      <AdminHeader title="Inställningar" description="Uppgifter som visas på flera ställen på hemsidan, till exempel i sidfoten." />
+      <AdminHeader
+        title="Inställningar"
+        description="Gemensamma uppgifter som visas på flera sidor, t.ex. i sidfoten (footer) och kontaktuppgifter."
+      />
       <SettingsForm values={settings} />
     </>
   );

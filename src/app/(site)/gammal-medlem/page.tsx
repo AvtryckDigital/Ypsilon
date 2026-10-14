@@ -27,7 +27,13 @@ export default async function FormerMemberPage() {
           )}
           {s.address && (
             <SidebarCard title="Postadress">
-              <address className="whitespace-pre-line not-italic leading-relaxed">{s.address}</address>
+              <address className="not-italic leading-relaxed">
+                {s.address.split(/\r?\n|\\n/).map((line, i) => (
+                  <span key={i} className="block">
+                    {line}
+                  </span>
+                ))}
+              </address>
             </SidebarCard>
           )}
         </>

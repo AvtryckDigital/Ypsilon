@@ -117,6 +117,7 @@ export function Markdown({ children, className = "" }: { children: string | null
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
+          p: ({ children }) => <p className="whitespace-pre-line">{children}</p>,
           a: ({ href = "", children }) => {
             const external = /^https?:\/\//.test(href);
             return (
