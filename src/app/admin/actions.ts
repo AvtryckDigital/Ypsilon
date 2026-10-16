@@ -81,7 +81,7 @@ export async function saveEntity(key: string, id: number | null, _prev: FormStat
     newId = res.lastId;
   }
 
-  revalidate(entity, data);
+  revalidate(entity, { ...data, id: newId });
   // Ett nytt album öppnas direkt så att man kan ladda upp bilder.
   if (!id && entity.key === "galleri") redirect(`/admin/galleri/${newId}?sparat=1`);
   redirect(`/admin/${entity.key}?sparat=1`);

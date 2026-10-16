@@ -6,8 +6,8 @@ export default async function Footer() {
   const s = await getSettings();
   const year = new Date().getFullYear();
 
-  return (
-    <footer className="mt-auto border-t border-[#c5a059]/25 bg-[#090b0f] text-[#d6cdbd]">
+  return (    //färg för footer bg ändras här:
+    <footer className="mt-auto border-t border-[#c5a059]/25 bg-[var(--color-midnight)] text-[#d6cdbd]">
       <Container className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-1">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -63,7 +63,10 @@ export default async function Footer() {
       <div className="border-t border-[#c5a059]/15">
         <Container className="flex flex-wrap items-center justify-between gap-3 py-5 text-xs font-serif tracking-wider uppercase text-[#a09482]">
           <p>© {year} Ypsilon · Damförening vid Norrlands nation, Uppsala</p>
-          <Link href="/admin" className="hover:text-[#dfbe76]">Logga in</Link>
+          <div className="flex items-center gap-6">
+            <Link href="/sitemap" className="hover:text-[#dfbe76]">Webbplatskarta</Link>
+            <Link href="/admin" className="hover:text-[#dfbe76]">Logga in</Link>
+          </div>
         </Container>
       </div>
     </footer>

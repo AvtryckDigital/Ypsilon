@@ -1,27 +1,41 @@
 import Link from "next/link";
 import { Clock, ExternalLink, MapPin } from "lucide-react";
-import { dayOfMonth, formatDate, formatTime, monthShort, weekday } from "@/lib/format";
+import { dayOfMonth, formatDate, formatTime, monthShort, parseLocal, weekday } from "@/lib/format";
 import type { YEvent } from "@/lib/types";
 
 export function timeRange(e: YEvent) {
   const start = formatTime(e.starts_at);
-  const sameDay = e.ends_at?.slice(0, 10) === e.starts_at.slice(0, 10);
-  const end = e.ends_at ? (sameDay ? formatTime(e.ends_at) : `${formatDate(e.ends_at, false)} ${formatTime(e.ends_at)}`.trim()) : "";
+  const endTime = formatTime(e.ends_at);
+  if (!e.ends_at) return start;
+
+  const s = parseLocal(e.starts_at);
+  const endP = parseLocal(e.ends_at);
+
+  let isOvernightOrSameDay = false;
+  if (s && endP) {
+    const startMs = Date.UTC(s.y, s.m - 1, s.d, s.hh ?? 0, s.mm ?? 0);
+    const endMs = Date.UTC(endP.y, endP.m - 1, endP.d, endP.hh ?? 0, endP.mm ?? 0);
+    const diffHours = (endMs - startMs) / (1000 * 60 * 60);
+    // Samma dag eller överskrider dygnet (t.ex. fest/gasque som slutar natten/morgonen därpå, upp till 28 timmar)
+    isOvernightOrSameDay = (s.y === endP.y && s.m === endP.m && s.d === endP.d) || (diffHours > 0 && diffHours <= 28);
+  }
+
+  const end = isOvernightOrSameDay && endTime
+    ? endTime
+    : `${formatDate(e.ends_at, false)} ${endTime}`.trim();
+
   if (start && end) return `${start}–${end}`;
   if (!start && end) return `till ${end}`;
   return start;
 }
 
 export function KindBadge({ kind }: { kind: YEvent["kind"] }) {
-  if (kind === "yra") {
+  if (kind === "extern") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-sm border border-[#c5a059]/50 bg-[#0d0f14] px-2.5 py-0.5 font-serif text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[#dfbe76]">
-        Yra
+      <span className="rounded-sm border border-[#ded3c2] bg-[#f5eedd]/60 px-2.5 py-0.5 font-serif text-[0.7rem] font-medium tracking-wide text-warm-muted">
+        Inte arrangerat av Ypsilon
       </span>
     );
-  }
-  if (kind === "extern") {
-    return <span className="rounded-sm border border-[#ded3c2] bg-[#f5eedd]/60 px-2.5 py-0.5 font-serif text-[0.7rem] font-medium tracking-wide text-warm-muted">Inte arrangerat av Ypsilon</span>;
   }
   return null;
 }
@@ -29,32 +43,36 @@ export function KindBadge({ kind }: { kind: YEvent["kind"] }) {
 export default function EventItem({
   event,
   compact = false,
-  banner: showBanner = false,
+  banner: bannerProp = false,
 }: {
   event: YEvent;
   compact?: boolean;
-  /** Affischen överst på kortet, som länk till evenemanget i kalendariet (startsidan). */
+  /** Visar affischen överst som ett bannerkort (t.ex. på startsidan). */
   banner?: boolean;
 }) {
   const time = timeRange(event);
-  const isYra = event.kind === "yra";
+  const isImportant = event.kind === "yra";
   const isExtern = event.kind === "extern";
-  const banner = showBanner && event.poster;
+  const isBannerCard = bannerProp && Boolean(event.poster);
   const href = `/kalendarium/${event.id}`;
-  // Långa beskrivningar kortas av i listan och läses i sin helhet på evenemangets sida
-  const longDescription = (event.description?.length ?? 0) > 280 || (event.description?.split("\n").length ?? 0) > 5;
 
   return (
     <article
-      className={`oxford-frame group/card flex gap-4 rounded-sm border bg-[#fbf9f5] p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:gap-5 sm:p-5 ${
-        banner ? "flex-col" : ""
-      } ${isYra ? "border-[#c5a059]/70 ring-1 ring-[#c5a059]/20" : "border-[#ded3c2] hover:border-[#c5a059]/50"}`}
+      className={`oxford-frame group/card flex rounded-sm border bg-[#fbf9f5] shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
+        isBannerCard ? "flex-col p-4 sm:p-5" : "flex-row items-center gap-4 p-4 sm:gap-5 sm:p-5"
+      } ${isImportant ? "border-[#c5a059]/70 ring-1 ring-[#c5a059]/20" : "border-[#ded3c2] hover:border-[#c5a059]/50"}`}
     >
-      {banner && (
-        <div className="relative aspect-[4/3] overflow-hidden rounded-sm border border-[#ded3c2] bg-[#0d0f14]">
+      {isBannerCard && (
+        <div className="relative mb-4 aspect-[4/3] w-full overflow-hidden rounded-sm border border-[#ded3c2] bg-[#0d0f14]">
           {/* Hela affischen syns, med en suddig kopia som fyller ytan bakom */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={event.poster!} alt="" aria-hidden loading="lazy" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-xl" />
+          <img
+            src={event.poster!}
+            alt=""
+            aria-hidden
+            loading="lazy"
+            className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-xl"
+          />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={event.poster!}
@@ -65,15 +83,15 @@ export default function EventItem({
         </div>
       )}
 
-      <div className="flex min-w-0 flex-1 gap-4 sm:gap-5">
+      <div className={`flex min-w-0 flex-1 ${isBannerCard ? "gap-4 sm:gap-5" : "items-center gap-4 sm:gap-5"}`}>
         <div
           className={`flex w-16 shrink-0 flex-col items-center justify-center rounded-sm py-2 text-center sm:w-[4.5rem] ${
-            isYra ? "border border-[#c5a059]/40 bg-[#0d0f14] text-[#dfbe76] shadow-sm" : "border border-[#ded3c2] bg-[#f4eee1] text-warm"
+            isImportant ? "border border-[#c5a059]/40 bg-[#0d0f14] text-[#dfbe76] shadow-sm" : "border border-[#ded3c2] bg-[#f4eee1] text-warm"
           }`}
           aria-hidden
         >
           <span className="font-display text-3xl font-semibold leading-none">{dayOfMonth(event.starts_at)}</span>
-          <span className={`mt-1 font-serif text-xs font-semibold uppercase tracking-[0.22em] ${isYra ? "text-[#dfbe76]" : "text-[#8c6b2d]"}`}>
+          <span className={`mt-1 font-serif text-xs font-semibold uppercase tracking-[0.22em] ${isImportant ? "text-[#dfbe76]" : "text-[#8c6b2d]"}`}>
             {monthShort(event.starts_at)}
           </span>
         </div>
@@ -101,44 +119,43 @@ export default function EventItem({
               <span className="inline-flex items-center gap-1.5"><MapPin size={15} aria-hidden /> {event.location}</span>
             )}
           </div>
-          {!compact && event.description && (
-            <p className={`mt-3 whitespace-pre-line text-[0.98rem] leading-relaxed text-warm/90 ${longDescription ? "line-clamp-4" : ""}`}>
-              {event.description}
-            </p>
-          )}
-          {!compact && longDescription && (
+          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
             <Link
               href={href}
-              className="relative z-10 mt-3 mr-5 inline-flex items-center gap-1.5 font-serif text-xs font-semibold uppercase tracking-[0.18em] text-[#8c6b2d] hover:text-warm"
+              className="relative z-10 inline-flex items-center gap-1.5 font-serif text-xs font-semibold uppercase tracking-[0.18em] text-[#8c6b2d] hover:text-warm"
             >
               Läs mer <span aria-hidden>→</span>
             </Link>
-          )}
-          {!compact && event.link && (
-            <a
-              href={event.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative z-10 mt-3 inline-flex items-center gap-1.5 font-serif text-xs font-semibold uppercase tracking-[0.18em] text-[#8c6b2d] hover:text-warm"
-            >
-              Mer information <ExternalLink size={14} aria-hidden />
-            </a>
-          )}
+            {event.link && (
+              <a
+                href={event.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative z-10 inline-flex items-center gap-1.5 font-serif text-xs font-semibold uppercase tracking-[0.18em] text-[#8c6b2d] hover:text-warm"
+              >
+                Facebook <ExternalLink size={14} aria-hidden />
+              </a>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Affischen från föreningens inlägg, om den finns. Öppnas i full storlek. */}
-      {event.poster && !compact && !banner && (
-        <a
-          href={event.poster}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="relative z-10 block w-16 shrink-0 self-start overflow-hidden rounded-sm border border-[#ded3c2] bg-white p-1 shadow-sm transition hover:-rotate-1 hover:shadow-md sm:w-32"
-          title={`Affisch för ${event.title}`}
+      {/* Landskapsbild inuti kortet till höger, länkar till evenemangssidan */}
+      {event.poster && !compact && !isBannerCard && (
+        <Link
+          href={href}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="relative z-10 mr-1 block w-24 shrink-0 self-center overflow-hidden rounded-sm border border-[#ded3c2] bg-white p-1 shadow-sm transition hover:border-[#c5a059]/70 hover:shadow-md sm:mr-3 sm:w-36 md:w-40"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={event.poster} alt={`Affisch för ${event.title}`} loading="lazy" className="aspect-[4/5] w-full object-cover" />
-        </a>
+          <img
+            src={event.poster}
+            alt={`Affisch för ${event.title}`}
+            loading="lazy"
+            className="aspect-[16/9] w-full rounded-xs object-cover"
+          />
+        </Link>
       )}
     </article>
   );

@@ -33,64 +33,83 @@ export default async function EventPage({ params }: PageProps<"/kalendarium/[id]
     <article>
       <PageHeader eyebrow={date} title={event.title} />
 
-      <Container className="max-w-4xl py-12 sm:py-16">
+      <Container className="max-w-3xl py-12 sm:py-16">
         <BackLink href="/kalendarium">Hela kalendariet</BackLink>
 
-        <div className={`grid gap-10 ${event.poster ? "md:grid-cols-[1fr_16rem]" : ""}`}>
-          <div className="min-w-0">
-            <dl className="oxford-frame space-y-3 rounded-sm border border-[#ded3c2] bg-[#fbf9f5] p-5 text-[1.02rem] text-warm shadow-sm sm:p-6">
+        {event.poster && (
+          <a
+            href={event.poster}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group mb-8 block overflow-hidden rounded-sm border border-[#ded3c2] bg-[#0d0f14] shadow-md transition hover:border-[#c5a059]/60 hover:shadow-lg"
+            title="Öppna affischen i full storlek"
+          >
+            <div className="relative aspect-[16/9] sm:aspect-[21/9] max-h-96 w-full overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={event.poster}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-xl"
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={event.poster}
+                alt={`Affisch för ${event.title}`}
+                className="relative h-full w-full object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:scale-[1.01]"
+              />
+            </div>
+          </a>
+        )}
+
+        <div>
+          <dl className="oxford-frame space-y-3 rounded-sm border border-[#ded3c2] bg-[#fbf9f5] p-5 text-[1.02rem] text-warm shadow-sm sm:p-6">
+            <div className="flex items-center gap-3">
+              <dt className="sr-only">Datum</dt>
+              <CalendarDays size={18} className="shrink-0 text-[#8c6b2d]" aria-hidden />
+              <dd>{date}</dd>
+            </div>
+            {time && (
               <div className="flex items-center gap-3">
-                <dt className="sr-only">Datum</dt>
-                <CalendarDays size={18} className="shrink-0 text-[#8c6b2d]" aria-hidden />
-                <dd>{date}</dd>
+                <dt className="sr-only">Tid</dt>
+                <Clock size={18} className="shrink-0 text-[#8c6b2d]" aria-hidden />
+                <dd>{time}</dd>
               </div>
-              {time && (
-                <div className="flex items-center gap-3">
-                  <dt className="sr-only">Tid</dt>
-                  <Clock size={18} className="shrink-0 text-[#8c6b2d]" aria-hidden />
-                  <dd>{time}</dd>
-                </div>
-              )}
-              {event.location && (
-                <div className="flex items-center gap-3">
-                  <dt className="sr-only">Plats</dt>
-                  <MapPin size={18} className="shrink-0 text-[#8c6b2d]" aria-hidden />
-                  <dd>{event.location}</dd>
-                </div>
-              )}
-              {event.kind !== "vanlig" && (
-                <div className="pt-1">
-                  <KindBadge kind={event.kind} />
-                </div>
-              )}
-            </dl>
-
-            {event.description && (
-              <p className="mt-8 whitespace-pre-line text-[1.1rem] leading-relaxed text-warm/90">{event.description}</p>
             )}
-
-            {event.link && (
-              <a
-                href={event.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-8 inline-flex items-center gap-2 rounded-sm border border-[#c5a059]/60 bg-[#0d0f14] px-5 py-3 font-serif text-xs font-semibold uppercase tracking-[0.18em] text-[#dfbe76] shadow-sm transition hover:bg-[#1e2330]"
-              >
-                Mer information <ExternalLink size={14} aria-hidden />
-              </a>
+            {event.location && (
+              <div className="flex items-center gap-3">
+                <dt className="sr-only">Plats</dt>
+                <MapPin size={18} className="shrink-0 text-[#8c6b2d]" aria-hidden />
+                <dd>{event.location}</dd>
+              </div>
             )}
-          </div>
+            {event.kind === "extern" && (
+              <div className="pt-1">
+                <KindBadge kind={event.kind} />
+              </div>
+            )}
+          </dl>
 
-          {event.poster && (
+          {event.subtitle && (
+            <h2 className="mt-8 font-display text-2xl font-semibold leading-snug text-warm sm:text-3xl">
+              {event.subtitle}
+            </h2>
+          )}
+
+          {event.description && (
+            <p className={`${event.subtitle ? "mt-4" : "mt-8"} whitespace-pre-line text-[1.1rem] leading-relaxed text-warm/90`}>
+              {event.description}
+            </p>
+          )}
+
+          {event.link && (
             <a
-              href={event.poster}
+              href={event.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="block self-start overflow-hidden rounded-sm border border-[#ded3c2] bg-white p-1.5 shadow-md transition hover:-rotate-1 hover:shadow-lg"
-              title="Öppna affischen i full storlek"
+              className="mt-8 inline-flex items-center gap-2 rounded-sm border border-[#c5a059]/60 bg-[#0d0f14] px-5 py-3 font-serif text-xs font-semibold uppercase tracking-[0.18em] text-[#dfbe76] shadow-sm transition hover:bg-[#1e2330]"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={event.poster} alt={`Affisch för ${event.title}`} className="w-full" />
+              Facebook <ExternalLink size={14} aria-hidden />
             </a>
           )}
         </div>

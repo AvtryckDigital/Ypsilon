@@ -34,7 +34,7 @@ export type Entity = {
 
 const KIND_OPTIONS = [
   { value: "vanlig", label: "Vanligt evenemang" },
-  { value: "yra", label: "Yra eller extra viktigt evenemang" },
+  { value: "yra", label: "Extra viktigt evenemang" },
   { value: "extern", label: "Arrangeras inte av Ypsilon (tips)" },
 ];
 
@@ -72,11 +72,12 @@ export const ENTITIES: Entity[] = [
     table: "events",
     label: "Kalendarium",
     singular: "evenemang",
-    description: "Yror, sittningar och andra evenemang. Passerade evenemang döljs automatiskt på hemsidan.",
+    description: "Evenemang i kalendariet. Extra viktiga evenemang framhävs med mörk datumruta. Passerade evenemang döljs automatiskt.",
     titleColumn: "title",
     orderBy: "starts_at DESC",
-    search: ["title", "location", "description"],
+    search: ["title", "subtitle", "location", "description"],
     revalidate: ["/", "/kalendarium"],
+    publicPath: (r) => `/kalendarium/${r.id}`,
     validate: (v) =>
       v.ends_at && v.starts_at && String(v.ends_at) < String(v.starts_at)
         ? { ends_at: "Slutet kan inte vara före början." }
@@ -91,11 +92,19 @@ export const ENTITIES: Entity[] = [
       { name: "title", label: "Namn på evenemanget", type: "text", required: true, full: true, placeholder: "t.ex. SnöYra" },
       { name: "starts_at", label: "Börjar", type: "datetime", required: true, help: "Lämna tiden tom om den inte är bestämd." },
       { name: "ends_at", label: "Slutar", type: "datetime" },
-      { name: "kind", label: "Typ", type: "select", options: KIND_OPTIONS, defaultValue: "vanlig", help: "Yror lyfts fram, tips visas i kursiv stil." },
+      { name: "kind", label: "Typ", type: "select", options: KIND_OPTIONS, defaultValue: "vanlig", help: "Extra viktiga evenemang framhävs med mörk datumruta i kalendariet. Tips visas i kursiv stil." },
       { name: "location", label: "Plats", type: "text", placeholder: "t.ex. Norrlands nation" },
       { name: "link", label: "Länk", type: "url", full: true, placeholder: "https://facebook.com/events/…", help: "Till exempel Facebook-evenemanget eller anmälan." },
+      {
+        name: "subtitle",
+        label: "Rubrik på evenemangssidan",
+        type: "text",
+        full: true,
+        placeholder: "t.ex. ÄLGGASQUEN – en 04-gask på Norrlands Nation",
+        help: "Visas som rubrik ovanför beskrivningen på evenemangets sida.",
+      },
       { name: "description", label: "Beskrivning", type: "textarea", rows: 5, full: true },
-      { name: "poster", label: "Affisch", type: "image", help: "Till exempel Yrans bild från Instagram. Visas bredvid evenemanget i kalendariet." },
+      { name: "poster", label: "Affisch", type: "image", help: "Till exempel en bild eller affisch från Instagram. Visas bredvid evenemanget i kalendariet." },
     ],
   },
   {

@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: PageProps<"/admin/[entity]">)
   return { title: getEntity(entity)?.label ?? "Admin" };
 }
 
-const KIND_LABEL: Record<string, string> = { yra: "Yra", vanlig: "Vanligt", extern: "Tips" };
+const KIND_LABEL: Record<string, string> = { yra: "Extra viktigt", vanlig: "Vanligt", extern: "Tips" };
 
 function Cell({ col, row }: { col: ListColumn; row: AdminRow }) {
   const v = row[col.name];
@@ -29,7 +29,7 @@ function Cell({ col, row }: { col: ListColumn; row: AdminRow }) {
         : <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-800">Utkast</span>;
     case "kind":
       return v === "yra"
-        ? <span className="rounded-full bg-gold px-2 py-0.5 text-xs font-semibold text-navy-deep">Yra</span>
+        ? <span className="rounded-full bg-gold px-2 py-0.5 text-xs font-semibold text-navy-deep">Extra viktigt</span>
         : <span className="text-muted">{KIND_LABEL[String(v)] ?? ""}</span>;
     case "image":
       return v ? (

@@ -3,7 +3,9 @@ import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 // Ger `next dev` tillgång till D1 (databasen) och R2 (bilderna) lokalt,
 // enligt bindningarna i wrangler.jsonc.
-initOpenNextCloudflareForDev();
+if (process.env.NODE_ENV === "development") {
+  initOpenNextCloudflareForDev();
+}
 
 const nextConfig: NextConfig = {
   turbopack: {
@@ -45,6 +47,7 @@ const nextConfig: NextConfig = {
         destination: "/nyheter/:slug",
         permanent: true,
       },
+      { source: "/webbplatskarta", destination: "/sitemap", permanent: true },
     ];
   },
 };

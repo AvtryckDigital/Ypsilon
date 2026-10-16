@@ -56,16 +56,6 @@ export default async function CalendarPage() {
       <Container className="max-w-4xl py-14 sm:py-20">
         <Markdown className="mb-10">{page?.body}</Markdown>
 
-        <div className="mb-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-warm-muted">
-          <span className="inline-flex items-center gap-2">
-            <span className="rounded-sm border border-[#c5a059]/50 bg-[#0d0f14] px-2.5 py-0.5 font-serif text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[#dfbe76]">Yra</span>
-            Yra eller extra viktigt evenemang
-          </span>
-          <span className="inline-flex items-center gap-2 italic">
-            <span className="h-2.5 w-2.5 rounded-sm border border-warm-muted" aria-hidden />
-            Arrangeras inte av Ypsilon, men kan vara kul att gå på
-          </span>
-        </div>
 
         {groups.length === 0 ? (
           <EmptyState title="Inga planerade evenemang just nu">

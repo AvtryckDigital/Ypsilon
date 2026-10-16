@@ -1,7 +1,7 @@
 export type Page = { slug: string; title: string; intro: string | null; body: string | null; image: string | null; updated_at: string };
 export type Post = { id: number; slug: string; title: string; excerpt: string | null; body: string | null; cover: string | null; author: string | null; published: number; published_at: string };
 export type EventKind = "yra" | "vanlig" | "extern";
-export type YEvent = { id: number; title: string; starts_at: string; ends_at: string | null; location: string | null; description: string | null; kind: EventKind; link: string | null; poster: string | null };
+export type YEvent = { id: number; title: string; subtitle?: string | null; starts_at: string; ends_at: string | null; location: string | null; description: string | null; kind: EventKind; link: string | null; poster: string | null };
 export type Song = { id: number; slug: string; title: string; number: number | null; category: string | null; melody: string | null; lyrics: string; notes: string | null };
 export type BoardMember = { id: number; role: string; role_description: string | null; name: string; email: string | null; image: string | null; sort_order: number };
 export type FormerChair = { id: number; period: string; name: string; note: string | null; image: string | null; sort_year: number; sort_order: number };
