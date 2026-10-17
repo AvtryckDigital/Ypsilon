@@ -30,24 +30,24 @@ export const HOME_PAGE_FIELDS: Field[] = [
   },
   {
     name: "hero_caption",
-    label: "Bildtext till stora bilden",
+    label: "Bildtext till stora omslagsbilden",
     type: "text",
     placeholder: "t.ex. SnöYran 2026",
     help: "Visas i hörnet på bilden. Lämna tomt för att automatiskt visa albumets namn om bilden hämtas från galleriet.",
   },
   {
     name: "about_image",
-    label: "Bild bredvid ”Om oss”",
+    label: "Bild under stora omslagsbilden",
     type: "image",
     help: "Bild bredvid presentationstexten. Lämna tomt för att automatiskt visa en bild från galleriet.",
   },
   {
     name: "body",
-    label: "Text under ”Om oss”",
+    label: "Text under stora omslagsbilden",
     type: "markdown",
     full: true,
     group: "Presentationstext",
-    groupDescription: "Texten som beskriver föreningen under rubriken ”Om oss” på startsidan.",
+    groupDescription: "",
   },
 ];
 
@@ -104,7 +104,7 @@ export const PAGES: PageDef[] = [
     path: "/",
     usesBody: true,
     usesImage: false,
-    note: "Här ändrar du allt på startsidan: rubrik, slogan, stor bild överst med bildtext, bild bredvid ”Om oss” samt presentationstexten.",
+    note: "Här ändrar du allt på startsidan",
     customFields: HOME_PAGE_FIELDS,
   },
   { slug: "om-ypsilon", label: "Vad är Ypsilon?", path: "/om-ypsilon", usesBody: true, note: "Text och bild i sidhuvudet för sidan ”Vad är Ypsilon?”." },
@@ -143,8 +143,8 @@ export const PAGE_FIELDS: Field[] = [
 
 export function getPageFields(def: PageDef): Field[] {
   if (def.customFields) return def.customFields;
-  return (def.usesBody ? PAGE_FIELDS : PAGE_FIELDS.filter((f) => f.name === "title" || f.name === "intro")).filter(
-    (f) => f.name !== "image" || def.usesImage !== false,
+  return PAGE_FIELDS.filter(
+    (f) => (def.usesBody || f.name !== "body") && (def.usesImage !== false || f.name !== "image"),
   );
 }
 

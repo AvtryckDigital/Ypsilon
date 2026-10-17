@@ -36,7 +36,7 @@ export default async function AlbumPage({ params }: PageProps<"/galleri/[slug]">
 
   return (
     <>
-      <PageHeader eyebrow={meta} title={album.title} intro={album.description} image={header?.src} />
+      <PageHeader eyebrow={meta} title={album.title} intro={album.description} image={album.cover || header?.src} />
       <Container className="py-10 sm:py-14">
         <BackLink href="/galleri">Alla album</BackLink>
         {images.length === 0 ? (

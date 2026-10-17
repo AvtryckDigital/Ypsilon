@@ -59,6 +59,7 @@ export default async function GalleryPage() {
                   <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {g.albums.map((a) => {
                       const cover = a.cover || a.first_thumb;
+                      const isCoverFromImages = !a.cover || a.cover === a.cover_src || a.cover === a.first_thumb;
                       return (
                         <li key={a.id}>
                           <Link
@@ -69,8 +70,8 @@ export default async function GalleryPage() {
                               {cover ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img
-                                  src={a.cover_medium ?? cover}
-                                  srcSet={a.cover_src ? srcSet({ src: a.cover_src, thumb: a.first_thumb ?? cover, medium: a.cover_medium, width: a.cover_width }) : undefined}
+                                  src={isCoverFromImages ? (a.cover_medium ?? cover) : cover}
+                                  srcSet={isCoverFromImages && a.cover_src ? srcSet({ src: a.cover_src, thumb: a.first_thumb ?? cover, medium: a.cover_medium, width: a.cover_width }) : undefined}
                                   sizes="(min-width: 1024px) 33vw, 50vw"
                                   alt=""
                                   loading="lazy"
