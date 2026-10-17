@@ -173,8 +173,8 @@ export default async function HomePage() {
         <Container>
           <SectionTitle title="Ur kalendariet" href="/kalendarium" link="Kalendariet" />
           {events.length > 0 ? (
-            <div className="grid gap-4 lg:grid-cols-3">
-              {events.map((e) => <EventItem key={e.id} event={e} compact banner />)}
+            <div className="space-y-4">
+              {events.map((e) => <EventItem key={e.id} event={e} compact />)}
             </div>
           ) : (
             <p className="max-w-xl text-lg text-warm-muted">
