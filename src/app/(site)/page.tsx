@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import EventItem from "@/components/EventItem";
 import PostCard from "@/components/PostCard";
 import { Container, Markdown, SectionTitle } from "@/components/ui";
@@ -60,40 +59,28 @@ export default async function HomePage() {
     <>
       {/* Stor bild med vapnet och namnet ---------------------------------------------- */}
       {/*
-        På mobil ligger bilden överst, minst 60 % av skärmhöjden (beskuren i sidled om den är bred), med
-        rubriken under. På större skärmar visas hela bilden: rubriken ligger över den, och ytan bredvid bilden fylls
-        med en suddig kopia av den. Bildens vänsterkant tonas ut mot rubriken.
+        Bilden täcker hela skärmen (16:9). Mörkare toningar nertill och till vänster
+        gör att vapen, rubrik och slogan alltid förblir skarpa och lättlästa mot bakgrunden.
       */}
-      <section className="relative isolate flex flex-col overflow-hidden border-b border-[#c5a059]/30 bg-[#0d0f14] text-white sm:h-[calc(100svh-4.75rem)] sm:max-h-[56rem] sm:min-h-[34rem] sm:flex-row sm:items-end">
+      <section className="relative isolate flex flex-col justify-end overflow-hidden border-b border-[#c5a059]/30 bg-[#0d0f14] text-white min-h-[calc(100svh-4.75rem)]">
         {heroSrc && (
-          <div
-            className="relative aspect-[var(--hero-ratio)] min-h-[60svh] w-full sm:min-h-0 sm:absolute sm:inset-0 sm:-z-10 sm:aspect-auto"
-            style={{ "--hero-ratio": `${heroPhoto?.width || 4} / ${heroPhoto?.height || 3}` } as CSSProperties}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={heroPhoto?.thumb ?? heroSrc}
-              alt=""
-              aria-hidden
-              className="absolute inset-0 hidden h-full w-full scale-110 object-cover opacity-50 blur-3xl sm:block"
-            />
+          <div className="absolute inset-0 -z-10">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={heroSrc}
               srcSet={heroSet}
-              sizes="(min-width: 640px) 75vw, 100vw"
+              sizes="100vw"
               alt=""
               fetchPriority="high"
-              className="absolute inset-0 h-full w-full object-cover sm:left-auto sm:object-contain sm:right-0 sm:w-auto sm:max-w-full sm:[mask-image:linear-gradient(to_right,transparent,black_30%)]"
+              className="h-full w-full object-cover object-center"
             />
-            {/* Mobil: bilden tonar ut mot rubriken. Större skärmar: mörkare nertill och till vänster där texten står. */}
-            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#0d0f14] to-transparent sm:hidden" aria-hidden />
-            <div className="absolute inset-0 hidden bg-gradient-to-t from-[#131620] via-[#131620]/25 to-transparent sm:block" aria-hidden />
-            <div className="absolute inset-0 hidden bg-gradient-to-r from-[#131620]/70 via-[#131620]/10 to-transparent sm:block" aria-hidden />
+            {/* Mörkare nertill och till vänster så att text, vapen och slogan förblir tydliga och lättlästa */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f14] via-[#0d0f14]/50 to-transparent" aria-hidden />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0d0f14]/80 via-[#0d0f14]/25 to-transparent" aria-hidden />
           </div>
         )}
 
-        <Container className={`relative pb-14 sm:pb-24 sm:pt-32 ${heroSrc ? "-mt-6 pt-0" : "pt-24"}`}>
+        <Container className="relative pb-12 pt-20 sm:pb-20 sm:pt-32">
           <div className="max-w-3xl">
             {/* Heraldic crest och stämpel */}
             <div className="mb-6 flex items-center gap-4">

@@ -191,11 +191,39 @@ export async function getAlbum(slug: string) {
 
 /** Hämtar en specifik bild med dess metadata (för srcset och upplösning). */
 export async function getPhotoBySrc(src: string) {
-  return first<Photo>(
+  const photo = await first<Photo>(
     `SELECT i.id, i.src, i.thumb, i.medium, i.width, i.height, a.slug AS album_slug, a.title AS album_title
      FROM album_images i JOIN albums a ON a.id = i.album_id
      WHERE i.src = ? OR i.medium = ? OR i.thumb = ? LIMIT 1`,
     src, src, src,
   );
+  if (photo) return photo;
+
+  const m = await first<{
+    id: number;
+    src: string;
+    thumb: string | null;
+    medium: string | null;
+    width: number | null;
+    height: number | null;
+  }>(
+    `SELECT id, src, thumb, medium, width, height
+     FROM media
+     WHERE src = ? OR medium = ? OR thumb = ? LIMIT 1`,
+    src, src, src,
+  );
+  if (!m) return null;
+
+  return {
+    id: m.id,
+    src: m.src,
+    thumb: m.thumb ?? m.src,
+    medium: m.medium,
+    width: m.width,
+    height: m.height,
+    album_slug: "",
+    album_title: "",
+  };
 }
+
 

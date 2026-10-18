@@ -26,7 +26,7 @@ export const HOME_PAGE_FIELDS: Field[] = [
     type: "image",
     group: "Startsidans bilder",
     groupDescription: "Huvudbilden överst och bilden bredvid presentationstexten. Lämna tomt för att automatiskt visa bilder från de senaste albumen i galleriet.",
-    help: "Hela bilden visas. Lämna tomt för att automatiskt visa en bild från det senaste gallerialbumet.",
+    help: "Täcker hela skärmen (gärna i formatet 16:9). Lämna tomt för att automatiskt visa en bild från det senaste gallerialbumet.",
   },
   {
     name: "hero_caption",
